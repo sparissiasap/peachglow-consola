@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía white label</title>
+<style>
+:root{--bg:#fbfaf7;--surface:#fff;--alt:#f3f1ec;--text:#22201c;--muted:#6c675e;--border:#e4e0d6;--accent:#5b46d6;--accent-soft:#ecE8ff;--ok:#1f7a4f;--warn:#a8650f;--danger:#b4382f;--code:#f1eee7;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#15141a;--surface:#1d1c24;--alt:#25232e;--text:#ebe9f2;--muted:#a3a0b3;--border:#35323f;--accent:#a596ff;--accent-soft:#2b2747;--ok:#58c793;--warn:#e5b04f;--danger:#ef7a70;--code:#26242f;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.layout{display:grid;grid-template-columns:270px 1fr;max-width:1200px;margin:0 auto}
+aside{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 18px;border-right:1px solid var(--border);font-size:14px}
+aside a{display:block;color:var(--muted);text-decoration:none;padding:3px 0}
+aside a:hover{color:var(--accent)}
+aside .group{font-weight:700;color:var(--text);margin:16px 0 4px;text-transform:uppercase;font-size:12px;letter-spacing:.06em}
+main{padding:32px 40px 120px;max-width:860px}
+h1{font-size:32px;line-height:1.2;margin:0 0 8px}
+h2{font-size:24px;margin:56px 0 12px;padding-top:12px;border-top:1px solid var(--border)}
+h3{font-size:18px;margin:32px 0 8px}
+p,li{max-width:72ch}
+a{color:var(--accent)}
+code,kbd{background:var(--code);padding:1px 6px;border-radius:5px;font:13.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:14px 16px;border-radius:10px;overflow:auto;font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid var(--border)}
+pre code{background:none;padding:0}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13px}
+.lead{font-size:18px;color:var(--muted)}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+.path{display:block;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;text-decoration:none;color:var(--text)}
+.path:hover{border-color:var(--accent)}
+.path b{display:block;font-size:18px;margin-bottom:4px}
+.path span{color:var(--muted);font-size:14.5px}
+.box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:8px;margin:16px 0}
+.box.warn{border-color:var(--warn);background:var(--alt)}
+.box.danger{border-color:var(--danger);background:var(--alt)}
+.box.ok{border-color:var(--ok);background:var(--alt)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--border);background:var(--alt);color:var(--muted);white-space:nowrap}
+.tag.native{color:var(--warn)}
+.tag.lock{color:var(--danger)}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps>li{counter-increment:s;position:relative;padding-left:40px;margin:14px 0}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:700;display:grid;place-items:center;font-size:14px}
+.both{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.both>div{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px}
+.both h4{margin:0 0 4px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+.check li{list-style:none;margin:6px 0}
+.check input{margin-right:8px;transform:scale(1.15)}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.menu-toggle{display:none}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border);display:none}
+  aside.open{display:block}
+  .menu-toggle{display:block;margin:12px 16px 0;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit}
+  main{padding:20px 16px 100px}
+  .paths,.both{grid-template-columns:1fr}
+  h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<button class="menu-toggle" onclick="document.querySelector('aside').classList.toggle('open')">☰ Índice</button>
+<div class="layout">
+<aside>
+  <div class="group">Empieza aquí</div>
+  <a href="#inicio">¿Qué es esto?</a>
+  <a href="#conceptos">Conceptos clave</a>
+  <a href="#mapa">Cómo viaja la configuración</a>
+  <a href="#antes">Antes de rentar: costos y reglas</a>
+  <a href="#peachglow">PeachGlow sigue igual</a>
+  <a href="#ejemplo"><b>Ejemplo completo: otra lashista</b></a>
+  <div class="group">Soy administrador</div>
+  <a href="#entrar">Entrar a la consola</a>
+  <a href="#alta">Dar de alta un negocio</a>
+  <a href="#cambiar">Cambiar marca, logo o módulos</a>
+  <a href="#mp">Mercado Pago de un negocio</a>
+  <a href="#actualizar">Publicar cambios</a>
+  <a href="#aab">Compilar y subir a Play</a>
+  <a href="#ios">iOS (cuando haya cuenta)</a>
+  <a href="#opcionales">Opcionales: Google, anuncios, Wallet, dominio</a>
+  <a href="#baja">Desactivar o eliminar</a>
+  <div class="group">Soy dev</div>
+  <a href="#instalar">Preparar la PC</a>
+  <a href="#comandos">Todos los comandos</a>
+  <a href="#local">Probar otro negocio en la PC</a>
+  <a href="#archivos">Dónde está cada cosa</a>
+  <a href="#extender">Agregar campos, módulos y rubros</a>
+  <a href="#ci">Qué revisa el CI</a>
+  <a href="#revertir">Si algo sale mal (revertir)</a>
+  <a href="#github">Configuración única de GitHub</a>
+  <div class="group">Referencia</div>
+  <a href="#secretos">Secretos de cada negocio</a>
+  <a href="#referencia">Claves de tenant.json</a>
+  <a href="#nativo">¿Necesito un .aab nuevo?</a>
+  <a href="#errores">Errores comunes</a>
+  <a href="#checklist">Checklist de alta</a>
+</aside>
+<main>
+
+<section id="inicio">
+<h1>Guía white label</h1>
+<p class="lead">Una sola base de código para muchas apps de citas. Cada negocio tiene su propia app en la tienda, su web, su Firebase y su marca, y todo se controla desde un archivo de configuración.</p>
+<div class="paths">
+  <a class="path" href="#entrar"><b>👩‍💼 Soy administrador</b><span>Uso la consola web. No necesito programar ni abrir una terminal.</span></a>
+  <a class="path" href="#instalar"><b>👨‍💻 Soy dev</b><span>Uso los comandos <code>npm run tenant</code>, reviso el código y arreglo lo que falle.</span></a>
+</div>
+<div class="box">Las dos formas hacen lo mismo. Lo que guardas en la consola se sube al repo, y lo que haces con comandos se ve en la consola. Cada receta de esta guía trae las dos versiones.</div>
+</section>
+
+<section id="conceptos">
+<h2>Conceptos clave</h2>
+<table>
+<tr><th>Palabra</th><th>Qué es</th></tr>
+<tr><td><b>Negocio</b> (tenant)</td><td>Cada cliente que renta la app. Vive en la carpeta <code>tenants/&lt;id&gt;/</code>. El <b>id</b> va en minúsculas y con guiones, por ejemplo <code>nails-ana</code>.</td></tr>
+<tr><td><b>tenant.json</b></td><td>El archivo de configuración del negocio: nombre, paquete, colores, rubro, módulos, Firebase, integraciones y datos iniciales. Nunca lleva contraseñas.</td></tr>
+<tr><td><b>Protegido</b></td><td>Un negocio ya publicado, como PeachGlow. No se puede eliminar, y lo que rompería su app instalada está bloqueado 🔒.</td></tr>
+<tr><td><b>Plantilla</b></td><td><code>tenants/plantilla/</code>: un negocio de ejemplo que nunca se despliega. Sirve de base y de prueba en el CI.</td></tr>
+<tr><td><b>Rubro</b></td><td>Pestañas, uñas, barbería, spa, estética o genérico. Pone las palabras de la app ("clienta" o "cliente", "lashista" o "barbero"), las categorías y la ficha de salud.</td></tr>
+<tr><td><b>Módulos</b></td><td>Lo que incluye el plan del negocio (pagos, lealtad, anuncios, propinas…). Un módulo fuera del plan desaparece de la app. Uno incluido se prende y apaga desde la app del negocio.</td></tr>
+<tr><td><b>Secreto</b></td><td>Contraseñas y llaves: token de Mercado Pago, cuentas de servicio, keystore. Se guardan cifradas en GitHub o en Firebase, nunca en el repo.</td></tr>
+<tr><td><b>Environment</b></td><td>El "cajón de secretos" de cada negocio en GitHub (Settings → Environments → <code>&lt;id&gt;</code>).</td></tr>
+<tr><td><b>.aab</b></td><td>El archivo que se sube a Google Play. Hace falta uno nuevo solo si cambia algo marcado con <span class="tag native">🔶 .aab</span>.</td></tr>
+<tr><td><b>Actualización por aire</b></td><td>Cambios de pantallas y textos que llegan a la app instalada sin pasar por la tienda (EAS Update). Solo llegan a las apps con el mismo <code>runtimeVersion</code>.</td></tr>
+</table>
+</section>
+
+<section id="mapa">
+<h2>Cómo viaja la configuración</h2>
+<svg viewBox="0 0 800 300" width="100%" role="img" aria-label="tenant.json alimenta la app, la web, las Cloud Functions y los despliegues">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted)">
+    <rect x="20" y="115" width="170" height="70" rx="12" style="fill:var(--accent-soft);stroke:var(--accent)"/>
+    <rect x="300" y="20" width="200" height="56" rx="10" style="fill:var(--surface)"/>
+    <rect x="300" y="98" width="200" height="56" rx="10" style="fill:var(--surface)"/>
+    <rect x="300" y="176" width="200" height="56" rx="10" style="fill:var(--surface)"/>
+    <rect x="590" y="60" width="190" height="56" rx="10" style="fill:var(--surface)"/>
+    <rect x="590" y="176" width="190" height="56" rx="10" style="fill:var(--surface)"/>
+    <path d="M190 140 L298 50" marker-end="url(#ar)"/><path d="M190 150 L298 126" marker-end="url(#ar)"/><path d="M190 160 L298 204" marker-end="url(#ar)"/>
+    <path d="M500 48 L588 84" marker-end="url(#ar)"/><path d="M500 126 L588 96" marker-end="url(#ar)"/><path d="M500 204 L588 204" marker-end="url(#ar)"/>
+  </g>
+  <g style="fill:var(--text)" font-size="14">
+    <text x="105" y="145" text-anchor="middle" font-weight="700">tenants/&lt;id&gt;/</text><text x="105" y="165" text-anchor="middle" font-size="12" style="fill:var(--muted)">tenant.json + imágenes</text>
+    <text x="400" y="45" text-anchor="middle" font-weight="600">app.config.js</text><text x="400" y="63" text-anchor="middle" font-size="12" style="fill:var(--muted)">nombre, paquete, íconos</text>
+    <text x="400" y="123" text-anchor="middle" font-weight="600">src/lib/tenant.ts</text><text x="400" y="141" text-anchor="middle" font-size="12" style="fill:var(--muted)">palabras, módulos, moneda</text>
+    <text x="400" y="201" text-anchor="middle" font-weight="600">functions/.env.&lt;proyecto&gt;</text><text x="400" y="219" text-anchor="middle" font-size="12" style="fill:var(--muted)">TENANT_* para los correos</text>
+    <text x="685" y="85" text-anchor="middle" font-weight="600">App Android / iOS</text><text x="685" y="103" text-anchor="middle" font-size="12" style="fill:var(--muted)">y su web</text>
+    <text x="685" y="201" text-anchor="middle" font-weight="600">Firebase del negocio</text><text x="685" y="219" text-anchor="middle" font-size="12" style="fill:var(--muted)">functions, reglas, hosting</text>
+  </g>
+  <text x="400" y="280" text-anchor="middle" font-size="13" style="fill:var(--muted)">Lo que el negocio cambia en su app (Más → Configuración) tiene prioridad sobre tenant.json.</text>
+</svg>
+</section>
+
+<section id="antes">
+<h2>Antes de rentar: costos y reglas</h2>
+<table>
+<tr><th>Tema</th><th>Qué saber</th></tr>
+<tr><td><b>Costo de Firebase</b></td><td>Cada negocio tiene su propio proyecto con plan Blaze, de pago por uso. Con poco tráfico suele salir en $0–5 USD al mes, pero lo paga la tarjeta del proyecto. Decide si es la tuya, para incluirlo en la renta, o la del negocio. Ponle siempre una alerta de presupuesto.</td></tr>
+<tr><td><b>Google Play</b></td><td>Si publicas en <b>tu</b> cuenta, tú respondes ante Google por todas las apps. Varias apps casi iguales pueden marcarse como "contenido repetitivo", y si Google sanciona una, el riesgo es para toda la cuenta, incluida PeachGlow. Dale a cada app su propio nombre, ícono, descripción y capturas.</td></tr>
+<tr><td><b>Apple (iOS)</b></td><td>La cuenta de Apple Developer cuesta 99 USD al año. Puede ser una tuya para todos o una por negocio.</td></tr>
+<tr><td><b>Datos de los clientes</b></td><td>Cada negocio es responsable de los datos de sus clientes, incluida la ficha de salud. Necesita su propio aviso de privacidad. Tú, como proveedor, conviene que firmes un contrato con cada negocio como "encargado" del tratamiento.</td></tr>
+<tr><td><b>Mercado Pago</b></td><td>Siempre con la cuenta del negocio: los anticipos le llegan directo a él, no a ti.</td></tr>
+<tr><td><b>Solo web</b></td><td>Un negocio puede usar solo la web (<code>https://&lt;proyecto&gt;.web.app</code> o su dominio), sin app en la tienda. Te ahorras Play, pero no tiene push nativas ni el botón de Google Wallet.</td></tr>
+</table>
+</section>
+
+<section id="peachglow">
+<h2>PeachGlow sigue igual</h2>
+<div class="box ok">PeachGlow es el negocio <code>peachglow</code> y es el que se usa cuando no se indica otro. Todo lo de siempre funciona igual:</div>
+<ul>
+<li><code>npm run update</code>, <code>npm run build:android</code>, <code>npm run deploy:web</code> y <code>firebase deploy</code> siguen trabajando con PeachGlow.</li>
+<li>Hacer <code>git push</code> a <code>master</code> sigue desplegando PeachGlow solo, con los secretos del repositorio de siempre.</li>
+<li>No cambia el paquete <code>com.peachglow.app</code>, ni el proyecto de EAS, ni el <code>runtimeVersion</code> (<code>0cdfd560…</code>), ni Firebase <code>peachglow-9daa8</code>. La versión de la tienda sigue recibiendo actualizaciones.</li>
+<li><b>Las cuentas admin no se tocan.</b> Ni la consola ni los comandos cambian roles. PeachGlow conserva su <code>ADMIN_EMAILS</code> en <code>functions/.env</code>.</li>
+<li><b>Primer push después de este cambio:</b> el despliegue automático de PeachGlow publica reglas, functions y web, pero <b>no</b> la actualización de la app, porque detecta archivos de configuración nuevos. Córrela una vez a mano con <code>npm run update</code> (es seguro: el runtimeVersion es el mismo). Después todo vuelve a ser automático.</li>
+<li>Lo que antes estaba en <code>app.json</code> ahora está en <code>tenants/peachglow/tenant.json</code>, y sus imágenes en <code>tenants/peachglow/assets/</code>.</li>
+</ul>
+</section>
+
+<section id="ejemplo">
+<h2>Ejemplo completo: una app como PeachGlow para otra lashista</h2>
+<p class="lead">De cero a la tienda. Caso: <b>Dafne</b> tiene un estudio de pestañas en Mérida y te renta la app. Su app se llamará <b>Lashes by Dafne</b>.</p>
+<div class="box">Cada paso dice <b>quién</b> lo hace: <span class="tag">Tú</span> (el administrador, desde la consola), <span class="tag">Dafne</span> (desde su propia app) o <span class="tag">Dev</span> (solo si algo falla). Tiempo total: unas 2 horas de trabajo, más la revisión de Google Play, que tarda días.</div>
+
+<h3>Paso 0 · Junta los datos <span class="tag">Tú</span> <span class="tag">Dafne</span></h3>
+<table>
+<tr><th>Dato</th><th>Ejemplo</th><th>Para qué</th></tr>
+<tr><td>Nombre de la app</td><td><code>Lashes by Dafne</code> (máx. 30 letras)</td><td>Tienda, ícono del celular, web</td></tr>
+<tr><td>Id interno</td><td><code>lashes-dafne</code></td><td>La carpeta del negocio. No se cambia después</td></tr>
+<tr><td>Paquete Android</td><td><code>com.lashesdafne.app</code></td><td>Identifica la app en Play. <b>Nunca</b> se cambia</td></tr>
+<tr><td>Proyecto de Firebase</td><td><code>lashes-dafne-prod</code></td><td>Su base de datos y servidor, separados de PeachGlow</td></tr>
+<tr><td>Color de su marca</td><td><code>#B5838D</code></td><td>Botones y fondos</td></tr>
+<tr><td>Logo e ícono</td><td>PNG 1024×1024, fondo de color o transparente</td><td>Ícono de la app y tarjeta digital</td></tr>
+<tr><td>Correo de Dafne</td><td><code>dafne.lashes@gmail.com</code></td><td>Será la primera admin de su app</td></tr>
+<tr><td>Correo de soporte</td><td>el mismo o uno del negocio</td><td>Sale en la tienda</td></tr>
+<tr><td>Su aviso de privacidad</td><td>una URL pública</td><td>Lo pide Google; cada negocio es responsable de sus datos</td></tr>
+<tr><td>Su cuenta de Mercado Pago</td><td>la de Dafne</td><td>Para que los anticipos le lleguen a ella</td></tr>
+<tr><td>Módulos de su plan</td><td>todo menos anuncios</td><td>Lo que verá en su app</td></tr>
+</table>
+
+<h3>Paso 1 · Crea su proyecto de Firebase <span class="tag">Tú</span> · 10 min</h3>
+<ol>
+<li>Entra a <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> con tu cuenta de Google y dale a <b>Crear un proyecto</b>.</li>
+<li>Nombre: <code>Lashes by Dafne</code>. Debajo del nombre, edita el <b>ID del proyecto</b> a <code>lashes-dafne-prod</code>. Si está ocupado, usa otro y anótalo.</li>
+<li>Google Analytics: <b>desactívalo</b>; no hace falta. Dale a <b>Crear proyecto</b>.</li>
+<li>Ya adentro: abajo a la izquierda, <b>Spark → Actualizar → Blaze</b>. Elige tu cuenta de facturación y pon una <b>alerta de presupuesto</b> de, por ejemplo, $5 USD.</li>
+</ol>
+<p class="muted">No crees apps ni actives servicios: eso lo hace solo el paso 5.</p>
+
+<h3>Paso 2 · Crea el negocio en la consola <span class="tag">Tú</span> · 5 min</h3>
+<ol>
+<li>En la consola, arriba: <b>+ Nuevo</b>.</li>
+<li>Llénalo así:
+  <ul>
+    <li>Id interno: <code>lashes-dafne</code></li>
+    <li>Nombre: <code>Lashes by Dafne</code></li>
+    <li>Rubro: <b>Pestañas y cejas</b>. Con esto la app dice "clienta", "lashista" y "estudio", trae las categorías Extensiones, Retoques y Lifting, y la ficha de salud de ojos, igual que PeachGlow.</li>
+    <li>Color: <code>#B5838D</code></li>
+    <li>Paquete: <code>com.lashesdafne.app</code></li>
+    <li>Project ID: <code>lashes-dafne-prod</code></li>
+    <li>Soporte: su correo</li>
+    <li>Primera admin: <code>dafne.lashes@gmail.com</code></li>
+    <li>Módulos: deja todos menos <b>Anuncios</b> (o lo que incluya su plan)</li>
+  </ul>
+</li>
+<li><b>Crear negocio</b>. Te lleva a su ficha. Ya aparece en <b>Negocios</b> con un círculo de su color como ícono de relleno.</li>
+</ol>
+<div class="both"><div><h4>Equivalente con comando</h4><code>npm run tenant -- new lashes-dafne --name "Lashes by Dafne" --industry pestanas --project lashes-dafne-prod --package com.lashesdafne.app --color "#B5838D"</code></div><div><h4>Qué se crea</h4><code>tenants/lashes-dafne/</code> con su <code>tenant.json</code>, imágenes de relleno y servicios de ejemplo de pestañas.</div></div>
+
+<h3>Paso 3 · Sube su ícono y logo <span class="tag">Tú</span> · 5 min</h3>
+<ol>
+<li>En el negocio, entra a <b>Imágenes</b>. Para cada imagen, <b>Elegir archivo</b>:
+  <ul>
+    <li><b>Ícono de la app:</b> 1024×1024</li>
+    <li><b>Ícono Android (frente):</b> el logo sobre fondo transparente, centrado y con margen</li>
+    <li><b>Ícono Android (fondo):</b> un color liso</li>
+    <li><b>Logo (símbolo):</b> el de la tarjeta digital</li>
+    <li><b>Favicon:</b> 48×48</li>
+  </ul>
+</li>
+<li>Si una imagen no mide lo recomendado, la consola te avisa antes de subirla.</li>
+</ol>
+
+<h3>Paso 4 · Dale a la consola permiso sobre su Firebase <span class="tag">Tú</span> · 10 min</h3>
+<ol>
+<li>Abre <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank" rel="noopener">Google Cloud → Cuentas de servicio</a>. Arriba, en el selector de proyectos, elige <b>Lashes by Dafne</b>; <b>no</b> PeachGlow.</li>
+<li><b>+ Crear cuenta de servicio</b>, con nombre <code>github-deploy</code>. Luego <b>Crear y continuar</b>.</li>
+<li>Agrega estos 5 roles, uno por uno, con <b>+ Agregar otro rol</b>:
+  <ul>
+    <li><b>Editor</b></li>
+    <li><b>Administrador de Cloud Functions</b></li>
+    <li><b>Usuario de cuenta de servicio</b></li>
+    <li><b>Administrador de Secret Manager</b></li>
+    <li><b>Administrador de Firebase</b></li>
+  </ul>
+  Después <b>Continuar → Listo</b>.</li>
+<li>Abre la cuenta que se creó → pestaña <b>Claves → Agregar clave → Crear clave nueva → JSON → Crear</b>. Se descarga un archivo <code>lashes-dafne-prod-xxxx.json</code>.</li>
+<li>En la consola, entra al negocio → <b>Secretos → FIREBASE_SERVICE_ACCOUNT</b> → elige ese archivo → <b>Guardar</b>. Si la llave es de otro proyecto, la consola la rechaza.</li>
+<li><b>Borra el .json de Descargas</b> y vacía la papelera: da acceso a producción.</li>
+</ol>
+
+<h3>Paso 5 · Prepara su nube <span class="tag">Tú</span> · 1 clic + 10 min de espera</h3>
+<ol>
+<li>En el negocio, entra a <b>Desplegar → Preparar proyecto en la nube</b> y confirma.</li>
+<li>El avance se ve abajo, en <b>Altas</b>; con <b>ver detalle</b> abres GitHub. Al terminar, sin que hagas nada más:
+  <ul>
+    <li>Firestore, Storage y el login con correo quedan activados.</li>
+    <li>Quedan creadas su app web y su app Android en Firebase. Su <code>google-services.json</code> real reemplaza al de relleno y su configuración web se guarda en su <code>tenant.json</code>.</li>
+    <li>Su web queda publicada en <code>https://lashes-dafne-prod.web.app</code>.</li>
+    <li>Su proyecto de EAS queda creado, para las actualizaciones de la app.</li>
+    <li>Se cargan los servicios de ejemplo de pestañas y un "Especialista principal".</li>
+  </ul>
+</li>
+<li>Si al final de la corrida sale un aviso (ℹ) de <b>Storage</b> o de <b>Correo/contraseña</b>, actívalo a mano en Firebase: <b>Storage → Comenzar</b>, o <b>Authentication → Método de acceso → Correo electrónico/contraseña</b>.</li>
+<li>Comprueba: abre <code>https://lashes-dafne-prod.web.app</code>. Debe decir <b>Lashes by Dafne</b>, con su color.</li>
+</ol>
+<div class="box warn">Si falla, abre <b>ver detalle</b> y busca el paso en rojo. Lo más común es que la cuenta de servicio no tenga uno de los 5 roles: agrégalo y vuelve a dar <b>Preparar proyecto en la nube</b>. Se puede repetir sin problema.</div>
+
+<h3>Paso 6 · Activa los correos <span class="tag">Tú</span> · 15 min</h3>
+<ol>
+<li>En Firebase (proyecto de Dafne), entra a <b>Compilación → Extensions → Explorar → Trigger Email from Firestore → Instalar</b>.</li>
+<li>Configúrala:
+  <ul>
+    <li>Colección: <code>mail</code></li>
+    <li>SMTP: si usas Gmail, en esa cuenta de Google activa la verificación en dos pasos y crea una <b>contraseña de aplicación</b> (myaccount.google.com → Seguridad → Contraseñas de aplicaciones). En <b>SMTP connection URI</b> pon <code>smtps://correo%40gmail.com@smtp.gmail.com:465</code> (la @ del correo va como <code>%40</code>). En <b>SMTP password</b> pon la contraseña de aplicación.</li>
+    <li>Remitente: <code>Lashes by Dafne &lt;correo@gmail.com&gt;</code></li>
+  </ul>
+</li>
+<li>Al terminar, los recordatorios y avisos por correo ya salen.</li>
+</ol>
+
+<h3>Paso 7 · Dafne entra y deja su negocio a su gusto <span class="tag">Dafne</span> · 30 min</h3>
+<ol>
+<li>Dafne abre <code>https://lashes-dafne-prod.web.app</code> → <b>Crear cuenta</b> con <code>dafne.lashes@gmail.com</code>. "Continuar con Google" funciona hasta que configures el login con Google (<a href="#opcionales">opcionales</a>). Como es el correo de "primera admin", entra directo a su panel.</li>
+<li>En <b>Más → Configuración</b> llena:
+  <ul>
+    <li>teléfono, WhatsApp, dirección (con el botón de ubicación) e Instagram;</li>
+    <li>sus políticas;</li>
+    <li>si quiere, su logo y su color; esto no necesita compilar nada.</li>
+  </ul>
+</li>
+<li>En <b>Más → Servicios</b> cambia los de ejemplo por los suyos: nombre, duración, precio y anticipo.</li>
+<li>En <b>Más → Personal y horarios</b> renombra "Especialista principal" a su nombre, pon su horario y su celular, y agrega a sus lashistas.</li>
+<li>Prende lo que quiera usar: recordatorios, lealtad, lista de espera, etc. Son los mismos interruptores que tiene PeachGlow.</li>
+</ol>
+<div class="box">Las demás cuentas de su equipo las administra Dafne desde su app. La consola nunca toca cuentas admin.</div>
+
+<h3>Paso 8 · Conecta su Mercado Pago <span class="tag">Dafne</span> <span class="tag">Tú</span> · 15 min</h3>
+<ol>
+<li><span class="tag">Dafne</span> entra a <a href="https://www.mercadopago.com.mx/developers/panel/app" target="_blank" rel="noopener">Mercado Pago → Tus integraciones → Crear aplicación</a>, con tipo <b>Pagos online → Checkout Pro</b>. Te pasa su <b>Access token de producción</b> (<code>APP_USR-…</code>) por un medio seguro, nunca por un chat grupal.</li>
+<li><span class="tag">Tú</span> En la consola, entra a <b>Secretos → MP_ACCESS_TOKEN</b> → pégalo → <b>Guardar</b>.</li>
+<li><span class="tag">Dafne</span> En Mercado Pago, <b>Webhooks → Modo productivo</b>: URL <code>https://us-central1-lashes-dafne-prod.cloudfunctions.net/mercadoPagoWebhook</code> (la consola la muestra en Secretos), evento <b>Pagos</b>, y guarda. Copia la <b>clave secreta</b>.</li>
+<li><span class="tag">Tú</span> Entra a <b>Secretos → MP_WEBHOOK_SECRET</b> → pégala → <b>Guardar</b>. Cada secreto se copia a Firebase y las functions se vuelven a desplegar solas; el avance se ve en Desplegar.</li>
+<li><span class="tag">Dafne</span> Prueba con una cita real de poco monto y luego reembolsa.</li>
+</ol>
+
+<h3>Paso 9 · Aviso de privacidad y datos legales <span class="tag">Tú</span> · 10 min</h3>
+<ol>
+<li>Publica el aviso de privacidad de Dafne. Puedes adaptar el de PeachGlow con sus datos; ella es la responsable de los datos de sus clientas.</li>
+<li>En la consola, ve a <b>Configuración → Legal y contacto</b>: URL del aviso, URL para eliminar la cuenta (la misma con <code>#eliminar-cuenta</code>) y correo de soporte. Luego <b>Guardar</b>.</li>
+</ol>
+
+<h3>Paso 10 · Su llave de firma para Play <span class="tag">Tú</span> <span class="tag">Dev</span> · 10 min</h3>
+<ol>
+<li>Crea su keystore. Es una sola vez y es <b>distinta</b> a la de PeachGlow:
+<pre><code>keytool -genkeypair -v -keystore lashes-dafne-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000</code></pre>
+Anota las contraseñas en tu gestor de contraseñas.</li>
+<li>En la consola, entra a <b>Secretos</b> y guarda:
+  <ul>
+    <li><code>ANDROID_KEYSTORE_BASE64</code>: elige el <code>.jks</code></li>
+    <li><code>ANDROID_KEYSTORE_PASSWORD</code></li>
+    <li><code>ANDROID_KEY_ALIAS</code>: <code>upload</code></li>
+    <li><code>ANDROID_KEY_PASSWORD</code></li>
+  </ul>
+</li>
+<li>Respalda el <code>.jks</code> fuera del repo (USB o gestor de contraseñas).</li>
+</ol>
+
+<h3>Paso 11 · Compila su app <span class="tag">Tú</span> · 1 clic + 20 min</h3>
+<ol>
+<li>Entra a <b>Compilar → Compilar .aab (Android)</b>.</li>
+<li>Al terminar, aparece en <b>.aab listos</b>. Abre el enlace → sección <b>Artifacts</b> → descarga <code>aab-lashes-dafne</code> (un .zip con el <code>.aab</code> adentro).</li>
+</ol>
+
+<h3>Paso 12 · Publícala en Google Play <span class="tag">Tú</span> · 1 h + días de revisión</h3>
+<ol>
+<li>En <b>Play Console → Crear app</b>: nombre <b>Lashes by Dafne</b>, idioma Español (Latinoamérica), App, Gratis.</li>
+<li>Llena la ficha: descripción, ícono 512 (está en Imágenes → "Ícono para Play Store"), gráfico de funciones y capturas de su web o de su app.</li>
+<li>Llena <b>Contenido de la app</b> igual que PeachGlow: anuncios (No, si quitaste el módulo), seguridad de los datos, público objetivo y el link de eliminación de cuenta.</li>
+<li>Sube el <code>.aab</code> a <b>Prueba cerrada</b> con al menos 12 testers durante 14 días. Después solicita el acceso a producción, como hiciste con PeachGlow.</li>
+<li>Cuando Google lo apruebe: <b>Producción → Crear versión</b> con ese mismo <code>.aab</code>.</li>
+</ol>
+<div class="box warn">Si publicas varias apps casi iguales en tu cuenta, Google puede marcarlas como contenido repetitivo. Haz que cada una tenga su propio nombre, ícono, descripción y capturas.</div>
+
+<h3>Paso 13 · Verifica que todo funcione <span class="tag">Tú</span> <span class="tag">Dafne</span></h3>
+<ul class="check">
+<li>☐ La web y la app dicen "Lashes by Dafne", con su color y su ícono; nada dice PeachGlow.</li>
+<li>☐ Una clienta de prueba se registra, agenda, paga el anticipo y le llega el correo de confirmación.</li>
+<li>☐ Dafne ve la cita en su agenda y le llega el aviso.</li>
+<li>☐ El recordatorio llega un día antes, por correo y push.</li>
+<li>☐ En la consola → Negocios, "Último despliegue" sale en ✔.</li>
+</ul>
+
+<h3>Después: el día a día</h3>
+<table>
+<tr><th>Si…</th><th>Qué pasa / qué haces</th></tr>
+<tr><td>Mejoras el código de la app (para todos)</td><td>Con el push, la app de Dafne y la de PeachGlow se actualizan solas.</td></tr>
+<tr><td>Dafne quiere otro color o logo</td><td>Lo cambia ella en su app, o tú en la consola. No se compila nada.</td></tr>
+<tr><td>Cambia su plan (quitar propinas, agregar paquetes)</td><td>Consola → Configuración → Módulos incluidos → Guardar.</td></tr>
+<tr><td>Quiere cambiar el nombre de la app en la tienda</td><td>Configuración → nombre 🔶 → Compilar → subir versionCode → Compilar .aab → subirlo a Play.</td></tr>
+<tr><td>Deja de rentar</td><td>Eliminar → Desactivar. Su app sigue funcionando, pero ya no recibe actualizaciones.</td></tr>
+</table>
+</section>
+
+<!-- ===================== ADMINISTRADOR ===================== -->
+
+<section id="entrar">
+<h2>👩‍💼 Entrar a la consola</h2>
+<p>La consola es una página web. No guarda datos propios: entras con un <b>token de GitHub</b>, que es como una llave de acceso al repo.</p>
+<ol class="steps">
+<li>En GitHub, entra a tu foto → <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li>
+<li>Ponle de nombre <code>consola</code> y una caducidad (por ejemplo, 90 días). En <b>Repository access</b> elige <b>Only select repositories</b> y marca el repo de la app.</li>
+<li>En <b>Permissions → Repository permissions</b> da <b>Read and write</b> a <b>Contents</b>, <b>Actions</b>, <b>Secrets</b>, <b>Environments</b> y <b>Workflows</b>. <b>Metadata</b> queda en solo lectura.</li>
+<li>Copia el token (empieza con <code>github_pat_</code>). Abre la consola en <code>https://&lt;tu-usuario&gt;.github.io/peachglow-consola/</code> (ver <a href="#github">Configuración única de GitHub</a>) y pégalo. Se borra al cerrar la pestaña.</li>
+<li>Cuando el token caduque, la consola te regresa a la pantalla de entrada: crea otro igual y listo.</li>
+</ol>
+<div class="box warn">El token da acceso a producción: no lo compartas ni lo pegues en chats. Si se filtra, bórralo en esa misma página de GitHub.</div>
+</section>
+
+<section id="alta">
+<h2>Dar de alta un negocio</h2>
+<p>Necesitas: nombre del negocio, su rubro, su color, una cuenta de Google para su Firebase y, si cobrará en línea, su cuenta de Mercado Pago.</p>
+<ol class="steps">
+<li><b>Crea su proyecto de Firebase.</b> En <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a>, entra a <b>Agregar proyecto</b> y ponle un id como <code>nails-ana-prod</code>. Después ve a <b>Actualizar → plan Blaze</b> y pon una alerta de presupuesto.</li>
+<li><b>Crea el negocio.</b>
+  <div class="both"><div><h4>Consola</h4><b>+ Nuevo negocio</b>. Llena los datos y los módulos del plan, y dale a <b>Crear negocio</b>.</div><div><h4>Comando</h4><code>npm run tenant -- new nails-ana --name "Nails by Ana" --industry unas</code></div></div>
+</li>
+<li><b>Crea su cuenta de servicio.</b> En <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank" rel="noopener">Google Cloud → Cuentas de servicio</a>, con el proyecto del negocio elegido: <b>Crear cuenta de servicio</b> → nombre <code>github-deploy</code>. Dale los roles <b>Editor</b>, <b>Administrador de Cloud Functions</b>, <b>Usuario de cuenta de servicio</b>, <b>Administrador de Secret Manager</b> y <b>Administrador de Firebase</b>. Luego entra a <b>Claves → Agregar clave → JSON</b>.</li>
+<li><b>Guárdala.</b>
+  <div class="both"><div><h4>Consola</h4>El negocio → <b>Secretos → FIREBASE_SERVICE_ACCOUNT</b> → elige el archivo .json → <b>Guardar</b>.</div><div><h4>Comando</h4><code>npm run tenant -- secrets set nails-ana FIREBASE_SERVICE_ACCOUNT --file ruta.json</code></div></div>
+  Después borra el .json de tu computadora.</li>
+<li><b>Prepara la nube.</b> En la consola, entra al negocio → <b>Desplegar → Preparar proyecto en la nube</b>. Esto:
+  <ul>
+    <li>activa Firebase, Firestore y el login con correo;</li>
+    <li>crea las apps web y Android, y baja su <code>google-services.json</code>;</li>
+    <li>crea los secretos de relleno y el proyecto de EAS;</li>
+    <li>despliega todo y carga los servicios de ejemplo.</li>
+  </ul>
+  Tarda unos 10 minutos.</li>
+<li><b>Correos.</b> En Firebase, entra a <b>Extensions</b> e instala <b>Trigger Email from Firestore</b> con la colección <code>mail</code> y el SMTP del negocio. Puede ser Gmail con contraseña de aplicación, o SendGrid.</li>
+<li><b>Su aviso de privacidad.</b> Cada negocio es responsable de los datos de sus clientes. Publica su aviso y pon la URL en <b>Configuración → Legal y contacto</b>.</li>
+<li><b>Sus imágenes.</b> Entra a <b>Imágenes</b> y sube el ícono y el logo del negocio, para reemplazar el círculo de relleno.</li>
+<li><b>La primera admin.</b> La persona del correo que pusiste en "primera admin" crea su cuenta en la web del negocio y queda como admin. Después, las demás cuentas las administra ella desde su app.</li>
+<li><b>Tienda.</b> Compila el primer .aab (ver <a href="#aab">Compilar y subir a Play</a>) y crea su ficha en Play Console.</li>
+</ol>
+</section>
+
+<section id="cambiar">
+<h2>Cambiar marca, logo o módulos</h2>
+<table>
+<tr><th>Quiero…</th><th>Consola</th><th>Comando</th></tr>
+<tr><td>Cambiar el color</td><td>Configuración → Marca</td><td><code>npm run tenant -- set &lt;id&gt; brand.primaryColor "#7A5CFA"</code></td></tr>
+<tr><td>Cambiar el ícono o el logo</td><td>Imágenes → elige el PNG</td><td><code>npm run tenant -- asset &lt;id&gt; icon ruta/icono.png</code></td></tr>
+<tr><td>Quitar un módulo del plan</td><td>Configuración → Módulos incluidos</td><td><code>npm run tenant -- set &lt;id&gt; features.tips false</code></td></tr>
+<tr><td>Cambiar palabras ("cliente", "barbero")</td><td>Configuración → Rubro y palabras</td><td><code>npm run tenant -- set &lt;id&gt; industry.staffTitle "estilista"</code></td></tr>
+<tr><td>Cambiar el nombre en la tienda</td><td>Configuración → App en la tienda <span class="tag native">🔶 .aab</span></td><td><code>npm run tenant -- set &lt;id&gt; app.name "Nuevo nombre"</code></td></tr>
+<tr><td>Ver toda la configuración</td><td>Configuración</td><td><code>npm run tenant -- show &lt;id&gt;</code></td></tr>
+</table>
+<div class="box">El color, el logo, los textos y casi todos los interruptores también los puede cambiar el negocio desde su app (<b>Más → Configuración</b>), sin compilar. Lo que el negocio cambie ahí tiene prioridad.</div>
+</section>
+
+<section id="mp">
+<h2>Mercado Pago de un negocio</h2>
+<ol class="steps">
+<li>El negocio crea su app en <a href="https://www.mercadopago.com.mx/developers/panel/app" target="_blank" rel="noopener">Mercado Pago → Tus integraciones</a>: tipo <b>Pagos online → Checkout Pro</b>.</li>
+<li>Copia el <b>Access token de producción</b> (<code>APP_USR-…</code>).</li>
+<li>En <b>Webhooks → Modo productivo</b> registra la URL que muestra la consola (Secretos → Mercado Pago), con el evento <b>Pagos</b>. Copia la <b>clave secreta</b>.</li>
+<li>Guárdalos:
+  <div class="both"><div><h4>Consola</h4>Secretos → <code>MP_ACCESS_TOKEN</code> y <code>MP_WEBHOOK_SECRET</code> → Guardar. Se copian a Firebase y se redespliega solo.</div><div><h4>Comando</h4><code>npm run tenant -- secrets mp &lt;id&gt;</code> (te pide los dos valores sin mostrarlos)</div></div></li>
+<li>Haz un pago real pequeño y reembólsalo para probar.</li>
+</ol>
+</section>
+
+<section id="actualizar">
+<h2>Publicar cambios</h2>
+<p><b>Todo cambio que guardes se despliega solo.</b> Pasa por las pruebas (CI) y luego se publica en cada negocio afectado: las reglas, las functions, la web y la actualización de la app.</p>
+<ul>
+<li>Si cambias el código (<code>src/</code>), se actualizan <b>todos</b> los negocios activos.</li>
+<li>Si cambias la configuración de un negocio, solo se actualiza ese negocio.</li>
+<li>Si algo exige .aab nuevo, la actualización por aire <b>no</b> se publica y queda un aviso en la pestaña Desplegar.</li>
+</ul>
+<div class="both"><div><h4>Consola</h4>El negocio → <b>Desplegar</b>: botones para desplegar todo o una parte, e historial con los resultados.</div><div><h4>Comando</h4><code>npm run tenant -- deploy &lt;id&gt; all</code><br><code>npm run tenant -- update &lt;id&gt; --message "…"</code></div></div>
+</section>
+
+<section id="aab">
+<h2>Compilar y subir a Play</h2>
+<ol class="steps">
+<li>Sube la versión: <b>Compilar → Subir versionCode</b>. Si cambiaste algo 🔶 o librerías nativas, usa <b>Nueva versión nativa</b>.<br><small>Comando: <code>npm run tenant -- bump &lt;id&gt;</code> (o con <code>--native</code>)</small></li>
+<li><b>Compilar → Compilar .aab</b>. Tarda unos 20 minutos. Necesita el keystore del negocio en Secretos (<code>ANDROID_KEYSTORE_BASE64</code> y sus contraseñas).<br><small>En la PC: <code>npm run tenant -- build &lt;id&gt; android</code>, con las propiedades <code>&lt;PREFIJO&gt;_UPLOAD_*</code> en <code>~/.gradle/gradle.properties</code>.</small></li>
+<li>En <b>Compilar</b>, elige en "Al terminar de compilar" a dónde subirlo (Producción, Prueba cerrada… o solo compilar) y dale <b>Compilar .aab</b>. Si elegiste una pista, queda como <b>borrador</b> en Play Console: entra y dale <b>Enviar a revisión</b>. Si elegiste solo compilar, descárgalo en <b>.aab listos</b> y súbelo a mano (Play Console → la app → Producción → Crear versión). Requiere la <a href="#play-auto">llave de Play</a>.</li>
+</ol>
+<h3 id="tienda-auto">Publicar en la tienda con cada versión nueva, sin tocar nada</h3>
+<p>En la consola → el negocio → <b>Configuración → Tienda (publicación automática)</b> elige a qué pista subir (Producción, Prueba cerrada…) y qué hacer: borrador, enviar a revisión al 20% o a todos. Desde entonces:</p>
+<ul>
+<li>Cuando un push <b>sube el versionCode</b> del negocio, GitHub despliega como siempre y además <b>compila el .aab y lo sube a Google Play</b>, usando el mensaje del commit como notas de la versión. Quién sube el versionCode: la consola al guardar un cambio 🔶 o al subir una imagen de la app, o tú con <code>bump</code>.</li>
+<li>Los pushes normales (pantallas, textos, arreglos) <b>no</b> pasan por la tienda: llegan por actualización automática.</li>
+<li>Con "No", compilas y subes cuando quieras desde la pestaña <b>Compilar</b>.</li>
+</ul>
+<p class="muted">PeachGlow: Producción, enviando a revisión con lanzamiento al 20%.</p>
+
+<h3 id="play-auto">Subir a Play automáticamente (una sola vez para tu cuenta)</h3>
+<p>Con esto, al compilar desde la consola eliges una pista (Producción, Prueba cerrada…) y qué hacer en Play:</p>
+<ul>
+<li><b>Borrador:</b> tú revisas y le das <b>Enviar a revisión</b>.</li>
+<li><b>Enviar a revisión con lanzamiento al 20%</b> (recomendado): al aprobarse llega al 20% de los usuarios; si todo va bien, lo subes al 100% en Play Console.</li>
+<li><b>Enviar a revisión y publicar a todos.</b></li>
+</ul>
+<p>También puedes escribir las notas de la versión (Novedades). La llave sirve para <b>todas</b> las apps de tu cuenta de Play.</p>
+<ol class="steps">
+<li><b>Google Cloud</b> (<a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a>):
+  <ol>
+    <li>Elige cualquier proyecto tuyo; para PeachGlow se usó <code>peachglow-9daa8</code>.</li>
+    <li>Ve a <b>APIs y servicios → Biblioteca → Google Play Android Developer API → Habilitar</b>.</li>
+    <li>Ve a <b>IAM y administración → Cuentas de servicio → + Crear cuenta de servicio</b>, con el nombre <code>play-publisher</code>, <b>sin roles</b>, y dale Listo.</li>
+    <li>Copia su correo.</li>
+    <li>Ábrela → <b>Claves → Agregar clave → JSON</b>. Se descarga a Descargas.</li>
+  </ol>
+</li>
+<li><b>Play Console</b>, a nivel cuenta: <b>Usuarios y permisos → Invitar a usuarios nuevos</b>. Pega el correo y dale los permisos <b>Ver información de la app…</b>, <b>Lanzar apps a pistas de prueba</b> y <b>Lanzar a producción…</b>. Después dale Invitar. Puede tardar hasta 24 h en activarse.</li>
+<li><b>GitHub</b>: GitHub solo acepta texto pegado, no archivos. Hay dos opciones:
+  <ul>
+    <li>En <code>sparissiasap/peachglow</code> (el repo <b>privado</b>, nunca el de la consola) ve a Settings → Secrets and variables → Actions → <b>New repository secret</b>. Ponle de nombre <code>PLAY_SERVICE_ACCOUNT</code> y pega <b>todo</b> el contenido del .json (ábrelo con el Bloc de notas, Ctrl+A, Ctrl+C).</li>
+    <li>O, escrito en el cuadro de mensajes de Claude Code (no en cmd):<br><code>! gh secret set PLAY_SERVICE_ACCOUNT --repo sparissiasap/peachglow &lt; ~/Downloads/archivo.json</code></li>
+  </ul>
+</li>
+<li>Borra el .json de Descargas y vacía la papelera.</li>
+</ol>
+<div class="box">Ya está hecho para tu cuenta (noviembre 2026). La <b>primera versión</b> de una app nueva siempre se sube a mano en Play Console; las siguientes ya pueden ir automáticas.</div>
+
+<h3>Llave de firma de cada negocio en GitHub</h3>
+<p>En la consola → el negocio → <b>Secretos</b>, elige el archivo <code>.jks</code> en <code>ANDROID_KEYSTORE_BASE64</code> y escribe sus contraseñas y su alias. La consola sí acepta archivos y los cifra sola. Para PeachGlow ya está hecho.</p>
+
+<div class="box warn"><b>Keystore:</b> cada negocio tiene su propia llave de subida. Si se pierde, Google deja cambiarla, pero es un trámite. Respáldala fuera del repo.</div>
+<details><summary>Crear el keystore de un negocio nuevo</summary>
+<pre><code>keytool -genkeypair -v -keystore nails-ana-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000</code></pre>
+<p>Para la consola, conviértelo a base64 y guárdalo en <code>ANDROID_KEYSTORE_BASE64</code>. La consola lo convierte sola si eliges el archivo .jks. Guarda también <code>ANDROID_KEYSTORE_PASSWORD</code>, <code>ANDROID_KEY_ALIAS</code> (<code>upload</code>) y <code>ANDROID_KEY_PASSWORD</code>.</p>
+</details>
+</section>
+
+<section id="ios">
+<h2>iOS (cuando haya cuenta de Apple)</h2>
+<div class="box">Ya está <b>preparado</b>: compilar en la nube de Expo (sin Mac), subir a TestFlight y enviar a revisión de Apple, todo desde la consola → <b>Compilar → iOS</b>. Se activa cuando guardes los datos de Apple. Todavía no se ha probado con una cuenta real: la primera vez, hazlo con calma y revisa cada paso.</div>
+<h3>Una sola vez por cuenta de Apple</h3>
+<ol class="steps">
+<li><b>Cuenta de Apple Developer:</b> <a href="https://developer.apple.com/programs/" target="_blank" rel="noopener">developer.apple.com/programs</a> (99 USD/año; la aprobación tarda 1-2 días). Anota tu <b>Team ID</b> (developer.apple.com → Account → Membership details; son 10 letras y números).</li>
+<li><b>Llave de API de App Store Connect:</b> <a href="https://appstoreconnect.apple.com/access/integrations/api" target="_blank" rel="noopener">App Store Connect → Usuarios y acceso → Integraciones → App Store Connect API</a> → <b>+</b> → nombre <code>github</code>, acceso <b>App Manager</b> → Generar.
+  <ul>
+    <li>Descarga el archivo <code>AuthKey_XXXX.p8</code>. Solo se puede descargar <b>una vez</b>.</li>
+    <li>Anota el <b>Key ID</b>, que aparece en la tabla.</li>
+    <li>Anota el <b>Issuer ID</b>, que aparece arriba de la tabla.</li>
+  </ul>
+</li>
+<li><b>Credenciales de firma en EAS:</b> esto se hace desde tu PC, una vez por negocio, porque Apple pide tu usuario. Expo crea y guarda los certificados.<br><code>$env:TENANT="peachglow"; npx eas-cli@latest credentials --platform ios</code><br>Elige <i>production</i>, inicia sesión con tu Apple ID y acepta que Expo genere el certificado de distribución y el perfil.</li>
+</ol>
+<h3>Por cada negocio</h3>
+<ol class="steps">
+<li><b>La app en App Store Connect:</b> Apps → <b>+ → Nueva app</b> → iOS, nombre, idioma Español (México), bundle id = el de <code>tenant.json</code> (ej. <code>com.peachglow.app</code>), SKU = el id del negocio.
+  <ul>
+    <li>Ábrela → <b>Información de la app → Apple ID</b>: es un número; anótalo.</li>
+    <li>Llena la ficha: capturas de iPhone, descripción, privacidad de la app (como en Seguridad de los datos de Play), aviso de privacidad y edad.</li>
+  </ul>
+</li>
+<li><b>Firebase:</b> en el proyecto del negocio → <b>Agregar app → iOS</b> con el mismo bundle id → descarga <code>GoogleService-Info.plist</code> y súbelo a <code>tenants/&lt;id&gt;/</code>.</li>
+<li><b>Notificaciones en iPhone:</b> en <a href="https://developer.apple.com/account/resources/authkeys/list" target="_blank" rel="noopener">Apple → Keys</a> crea una llave con <b>Apple Push Notifications service (APNs)</b>, descarga su <code>.p8</code> y súbela a Firebase → Configuración del proyecto → Cloud Messaging → app iOS → <b>Clave de autenticación de APNs</b>.</li>
+<li><b>En la consola</b> (el negocio):
+  <ul>
+    <li><b>Configuración → Integraciones:</b> <b>Apple: Team ID</b> y <b>App Store Connect: Apple ID de la app</b>. Login con Google en iPhone: <b>Login con Google: client ID de iOS</b> y <b>URL scheme de iOS</b> (salen del <code>GoogleService-Info.plist</code>: <code>CLIENT_ID</code> y <code>REVERSED_CLIENT_ID</code>) 🔶.</li>
+    <li><b>Secretos:</b> <code>APPLE_ASC_KEY_P8</code> (elige el archivo .p8), <code>APPLE_ASC_KEY_ID</code> y <code>APPLE_ASC_ISSUER_ID</code>.</li>
+  </ul>
+</li>
+<li><b>Primera versión:</b> consola → Compilar → iOS → <b>Subir a TestFlight</b>. Pruébala en tu iPhone con la app TestFlight. Después termina la ficha en App Store Connect y envía esa primera versión a revisión <b>a mano</b>: Apple pide revisar la ficha completa la primera vez.</li>
+<li><b>Las siguientes:</b> consola → Compilar → iOS → <b>Subir y enviar a revisión</b> (con publicación escalonada de 7 días si la dejas marcada) y las notas de la versión.</li>
+</ol>
+<div class="box warn">Apple revisa más estricto que Google: inicio de sesión de prueba para el revisor (en App Store Connect → Información de revisión de la app), eliminación de cuenta dentro de la app (ya está) y que todo funcione sin errores. La revisión tarda de horas a 2 días.</div>
+</section>
+
+<section id="opcionales">
+<h2>Opcionales: login con Google, anuncios, Wallet y dominio propio</h2>
+<details open><summary>Login con Google ("Continuar con Google")</summary>
+<ol>
+<li>Firebase del negocio → <b>Authentication → Método de acceso → Google → Habilitar</b>. Copia el <b>ID de cliente web</b>.</li>
+<li>Consola → Configuración → Firebase → <b>Client ID web de Google</b> → pégalo → Guardar.</li>
+<li>Para Android, Firebase necesita la huella <b>SHA-1</b> de la llave que firma la app. En <b>Play Console → la app → Integridad de la app → Firma de apps</b> copia el SHA-1 de la <b>llave de firma de apps</b> y de la <b>llave de subida</b>. Luego en <b>Firebase → Configuración del proyecto → tu app Android → Agregar huella digital</b> pega cada uno.</li>
+<li>Descarga de nuevo el <code>google-services.json</code> (ya trae el login) y súbelo a <code>tenants/&lt;id&gt;/</code>. Esto exige un .aab nuevo 🔶.</li>
+</ol>
+<p class="muted">Detalle completo para PeachGlow en <code>docs/LOGIN-GOOGLE.md</code>; es igual para cualquier negocio.</p>
+</details>
+<details><summary>Anuncios (AdMob)</summary>
+<ol>
+<li>En <a href="https://admob.google.com" target="_blank" rel="noopener">AdMob</a>, entra a <b>Apps → Agregar app</b> (Android, aún sin publicar si todavía no está en Play). Copia el <b>App ID</b> (<code>ca-app-pub-…~…</code>).</li>
+<li>En esa app, entra a <b>Bloques de anuncios → Banner</b> y copia su ID (<code>ca-app-pub-…/…</code>).</li>
+<li>En la consola, entra a Configuración → Integraciones y pega <b>AdMob: App ID Android</b> 🔶 y <b>bloque de anuncios Android</b>. En Módulos, prende <b>Anuncios</b>.</li>
+<li>Compila un .aab nuevo. En Play → Contenido de la app → Anuncios: <b>Sí</b>.</li>
+</ol>
+<p class="muted">Sin App ID se usan los anuncios de prueba de Google: no se cobra ni se muestra publicidad real.</p>
+</details>
+<details><summary>Tarjeta de lealtad en Google Wallet</summary>
+<ol>
+<li>Pide acceso en <a href="https://pay.google.com/business/console" target="_blank" rel="noopener">Google Pay &amp; Wallet Console</a> y copia el <b>Issuer ID</b>.</li>
+<li>Crea una cuenta de servicio en el proyecto del negocio, autorízala en Wallet Console (Usuarios) y descarga su JSON.</li>
+<li>En la consola: Configuración → Integraciones → <b>Google Wallet: Issuer ID</b>. En Secretos → <code>GOOGLE_WALLET_CREDENTIALS</code> → el JSON.</li>
+<li>El negocio prende "Mostrar botón de Google Wallet" en su app (Lealtad). Detalle en <code>docs/GOOGLE-WALLET.md</code>.</li>
+</ol>
+</details>
+<details><summary>Dominio propio (citas.negocio.com)</summary>
+<ol>
+<li>En Firebase del negocio, entra a <b>Hosting → Agregar dominio personalizado</b>, escribe el dominio y sigue las instrucciones de DNS (registros TXT y A en el proveedor del dominio). Tarda de minutos a horas.</li>
+<li>En la consola: Configuración → Firebase → <b>URL pública de la web</b> → <code>https://citas.negocio.com</code> → Guardar. Los links de los correos usarán ese dominio.</li>
+<li>En Firebase → Authentication → Configuración → <b>Dominios autorizados</b>, agrega el dominio, para que funcione el login.</li>
+</ol>
+</details>
+</section>
+
+<section id="baja">
+<h2>Desactivar o eliminar un negocio</h2>
+<ul>
+<li><b>Desactivar</b> (Eliminar → Desactivar): deja de desplegarse, pero se conserva todo. Su app sigue funcionando. Es reversible.</li>
+<li><b>Eliminar</b> (escribe el id para confirmar): borra su carpeta del repo y, si lo marcas, sus secretos de GitHub.<br><small>Comando: <code>npm run tenant -- delete &lt;id&gt; --github</code></small></li>
+</ul>
+<div class="box danger">Eliminar <b>no</b> borra su proyecto de Firebase, ni EAS, ni la app en Play. Hazlo a mano solo cuando estés seguro: los datos de sus clientes se pierden. PeachGlow no se puede eliminar.</div>
+</section>
+
+<!-- ===================== DEV ===================== -->
+
+<section id="instalar">
+<h2>👨‍💻 Preparar la PC</h2>
+<pre><code>npm install
+npm install --prefix functions
+npm install -g firebase-tools
+firebase login
+npx eas-cli@latest login
+npm run tenant -- list
+npm run tenant -- doctor peachglow</code></pre>
+<p>Para probar la consola en tu PC usa <code>npm run console</code> y abre <a href="http://localhost:5050">localhost:5050</a>.</p>
+</section>
+
+<section id="comandos">
+<h2>Todos los comandos</h2>
+<p>Todos son <code>npm run tenant -- &lt;comando&gt;</code>. Opciones comunes:</p>
+<ul>
+<li><code>--yes</code>: no pregunta.</li>
+<li><code>--dry-run</code>: solo muestra lo que haría.</li>
+<li><code>--force</code>: ignora candados; úsalo con cuidado.</li>
+</ul>
+<table>
+<tr><th>Comando</th><th>Qué hace</th></tr>
+<tr><td><code>list</code></td><td>Lista los negocios con su paquete, proyecto y versión</td></tr>
+<tr><td><code>show &lt;id&gt; [clave]</code></td><td>Muestra la configuración (sin secretos)</td></tr>
+<tr><td><code>new &lt;id&gt; [--name] [--industry] [--from id]</code></td><td>Crea un negocio con imágenes de relleno y datos iniciales del rubro</td></tr>
+<tr><td><code>set / unset &lt;id&gt; &lt;clave&gt; [valor]</code></td><td>Cambia o borra un valor, con validación y candados</td></tr>
+<tr><td><code>edit &lt;id&gt;</code></td><td>Abre tenant.json en tu editor y lo valida al cerrar</td></tr>
+<tr><td><code>asset &lt;id&gt; &lt;tipo&gt; &lt;png&gt;</code></td><td>Reemplaza una imagen y revisa su tamaño</td></tr>
+<tr><td><code>rename &lt;id&gt; &lt;nuevo&gt;</code></td><td>Cambia el id, solo si nunca se publicó</td></tr>
+<tr><td><code>delete &lt;id&gt; [--github]</code></td><td>Elimina el negocio del repo; pide escribir el id</td></tr>
+<tr><td><code>validate [id]</code></td><td>Revisa el esquema, las imágenes, <code>google-services.json</code> y que no se repitan valores</td></tr>
+<tr><td><code>doctor &lt;id&gt;</code></td><td>Todo lo anterior, más las sesiones de Firebase y EAS y la firma</td></tr>
+<tr><td><code>use &lt;id&gt;</code></td><td>Genera <code>functions/.env.&lt;proyecto&gt;</code> y <code>firebase.&lt;id&gt;.json</code></td></tr>
+<tr><td><code>secrets set|list|mp &lt;id&gt; [NOMBRE]</code></td><td>Sube secretos sin mostrarlos (a Firebase o, con <code>--github</code>, a GitHub)</td></tr>
+<tr><td><code>deploy &lt;id&gt; [rules|functions|web|all]</code></td><td>Despliega al Firebase del negocio</td></tr>
+<tr><td><code>update &lt;id&gt; [--message]</code></td><td>Publica la actualización por aire (Android)</td></tr>
+<tr><td><code>eas-init &lt;id&gt;</code></td><td>Crea su proyecto de EAS y guarda el projectId</td></tr>
+<tr><td><code>seed &lt;id&gt;</code></td><td>Carga los datos iniciales; nunca sobrescribe</td></tr>
+<tr><td><code>build &lt;id&gt; android|ios</code></td><td>Compila el .aab (en la PC) o iOS (en EAS). Para subir a TestFlight y enviar a revisión de Apple usa la consola → Compilar → iOS</td></tr>
+<tr><td><code>alerts &lt;id&gt; [--email correo]</code></td><td>Correo cuando una Cloud Function falla (Cloud Monitoring, máx. 1 por hora). La alta de un negocio lo hace sola</td></tr>
+<tr><td><code>bump &lt;id&gt; [--native] [--minor|--patch]</code></td><td>Sube el versionCode y, con <code>--native</code>, el runtimeVersion</td></tr>
+<tr><td><code>build-web [id]</code></td><td>Exporta la web a <code>dist/</code>, con sus archivos de <code>tenants/&lt;id&gt;/public</code></td></tr>
+<tr><td><code>plan --base &lt;sha&gt;</code></td><td>Lo usa el CI: dice qué desplegar en cada negocio</td></tr>
+</table>
+</section>
+
+<section id="local">
+<h2>Probar otro negocio en la PC</h2>
+<p>La variable <code>TENANT</code> elige el negocio. Sin ella, la app es PeachGlow. Al cambiar de negocio, limpia la caché:</p>
+<pre><code># PowerShell
+$env:TENANT="plantilla"; $env:EXPO_NO_DOTENV="1"; npx expo start --clear
+# bash
+TENANT=plantilla EXPO_NO_DOTENV=1 npx expo start --clear</code></pre>
+<div class="box warn"><code>EXPO_NO_DOTENV=1</code> evita que se cargue el <code>.env</code> de la raíz, que es de PeachGlow. Los demás negocios toman su Firebase de su <code>tenant.json</code>. Si falta y el <code>.env</code> es de otro proyecto, la app se detiene con un error claro en lugar de conectarse al Firebase equivocado.</div>
+</section>
+
+<section id="archivos">
+<h2>Dónde está cada cosa</h2>
+<table>
+<tr><th>Archivo</th><th>Para qué</th></tr>
+<tr><td><code>tenants/&lt;id&gt;/tenant.json</code></td><td>La configuración de cada negocio</td></tr>
+<tr><td><code>scripts/tenant/schema.js</code></td><td>El esquema: campos, validación y alta de negocios. Lo comparten la CLI, el CI, la consola y esta guía</td></tr>
+<tr><td><code>scripts/tenant/cli.js</code> y <code>ops.js</code></td><td>Los comandos y su lógica</td></tr>
+<tr><td><code>app.config.js</code></td><td>Arma la configuración de Expo desde el tenant (antes era <code>app.json</code>)</td></tr>
+<tr><td><code>metro.config.js</code></td><td>El alias <code>@tenant/…</code> para las imágenes del negocio</td></tr>
+<tr><td><code>src/lib/tenant.ts</code></td><td>Lo que viaja dentro de la app (<code>tenant</code>, <code>featureIncluded</code>)</td></tr>
+<tr><td><code>src/lib/industry.ts</code></td><td>Rubros: vocabulario (<code>w.client</code>, <code>w.Clients</code>, <code>w.la</code>…), categorías y ficha de salud</td></tr>
+<tr><td><code>src/lib/features.ts</code></td><td>Lo que se apaga cuando un módulo no está en el plan</td></tr>
+<tr><td><code>functions/src/tenant.ts</code></td><td>Los datos del negocio en las Cloud Functions (variables <code>TENANT_*</code>), los colores de los correos y de Wallet</td></tr>
+<tr><td><code>console/</code></td><td>La consola web (se publica con el workflow Console)</td></tr>
+<tr><td><code>.github/workflows/</code></td><td><code>ci</code>, <code>deploy</code>, <code>build-android</code>, <code>build-ios</code>, <code>tenant-secrets</code>, <code>tenant-provision</code>, <code>console</code></td></tr>
+</table>
+</section>
+
+<section id="extender">
+<h2>Agregar campos, módulos y rubros</h2>
+<details open><summary>Un campo nuevo en tenant.json</summary>
+<ol>
+<li>Agrégalo en <code>SECTIONS</code> de <code>scripts/tenant/schema.js</code>, con su tipo, etiqueta y, si aplica, <code>native: true</code> o <code>locked: true</code>. La consola y esta guía lo muestran solas.</li>
+<li>Si la app lo necesita, pásalo en <code>publicTenant()</code> (<code>scripts/tenant/load.js</code>) y en el tipo <code>PublicTenant</code> (<code>src/lib/tenant.ts</code>).</li>
+<li>Si lo necesitan las functions, agrégalo a <code>functionsEnv()</code> (<code>ops.js</code>) y a <code>TENANT</code> (<code>functions/src/tenant.ts</code>).</li>
+<li>Agrega una prueba en <code>tests/unit/tenant.test.ts</code>.</li>
+</ol></details>
+<details><summary>Un módulo nuevo que se pueda quitar del plan</summary>
+<ol>
+<li>Agrégalo en <code>FEATURES</code> (<code>schema.js</code>) y en <code>FEATURE_KEYS</code> (<code>src/lib/tenant.ts</code>). Una prueba revisa que coincidan.</li>
+<li>Indica qué apagar en <code>OFF</code> (<code>src/lib/features.ts</code>) y en <code>applyPlan</code> (<code>functions/src/config.ts</code>).</li>
+<li>Esconde su menú o su sección con <code>has('modulo')</code>.</li>
+</ol></details>
+<details><summary>Un rubro nuevo</summary>
+<ol>
+<li>Agrégalo en <code>INDUSTRIES</code> (<code>schema.js</code>), en el tipo <code>IndustryPreset</code> y en <code>PRESETS</code> (<code>src/lib/industry.ts</code>).</li>
+<li>Pon su texto de retoque en <code>REBOOK</code> (<code>functions/src/tenant.ts</code>) y sus servicios de ejemplo en <code>SAMPLE_SERVICES</code> (<code>schema.js</code>).</li>
+</ol></details>
+<details><summary>Textos con "clienta" en pantallas nuevas</summary>
+<p>No escribas "clientas" fijo: usa <code>w</code> de <code>@/lib/industry</code>. Por ejemplo, <code>`${w.Ninguna} ${w.client} cumple años`</code> sale "Ninguna clienta…" en PeachGlow y "Ningún cliente…" en una barbería. El CI falla si la web de la plantilla contiene "PeachGlow".</p>
+</details>
+</section>
+
+<section id="ci">
+<h2>Qué revisa el CI</h2>
+<ul>
+<li>Typecheck, lint y pruebas de la app, de las functions y de las reglas (como siempre).</li>
+<li><code>npm run tenant -- validate</code>: todos los negocios son válidos y no repiten paquete, proyecto ni site.</li>
+<li><b>PeachGlow sin cambios:</b> mismo nombre, paquete, projectId de EAS y runtimeVersion.</li>
+<li><b>Sin fugas de marca:</b> la web y la configuración de la plantilla no contienen "PeachGlow".</li>
+<li><b>Proyecto nativo:</b> el <code>prebuild</code> de la plantilla genera su paquete y su firma.</li>
+</ul>
+<p>Si el CI pasa en <code>master</code>, el workflow <b>Deploy</b> calcula qué cambió (<code>tenant plan</code>) y despliega cada negocio con los secretos de su Environment. Antes de desplegar revisa que la cuenta de servicio sea del proyecto correcto.</p>
+</section>
+
+<section id="revertir">
+<h2>Si algo sale mal (revertir)</h2>
+<table>
+<tr><th>Qué se rompió</th><th>Cómo regresar a lo anterior</th></tr>
+<tr><td>La web</td><td>Firebase del negocio → <b>Hosting → historial de versiones</b> → en la versión buena, <b>⋮ → Revertir</b>. Es inmediato.</td></tr>
+<tr><td>La app (actualización por aire)</td><td>Publica de nuevo la actualización anterior: <code>TENANT=&lt;id&gt; npx eas-cli@latest update:republish --group &lt;id-del-grupo-bueno&gt;</code>. Los ids salen en <code>TENANT=&lt;id&gt; npx eas-cli@latest update:list --branch production</code>. También puedes hacer un <code>git revert</code> del cambio y push.</td></tr>
+<tr><td>Las Cloud Functions o las reglas</td><td><code>git revert &lt;commit&gt;</code> y push: el despliegue automático vuelve a publicar la versión anterior.</td></tr>
+<tr><td>La configuración de un negocio (tenant.json)</td><td>En GitHub, abre el archivo → <b>History</b> → copia la versión buena. O usa <code>git revert</code> del commit "Consola: …".</td></tr>
+<tr><td>Un .aab subido a Play</td><td>En Play Console, detén el lanzamiento (si es escalonado) y sube un .aab corregido con versionCode mayor. Play no deja regresar a un versionCode anterior.</td></tr>
+</table>
+<div class="box warn">Nunca borres secretos de Firebase que una función esté usando: la función deja de arrancar. Si ya no se usan, primero quita la función o cámbiale el valor a <code>-</code>.</div>
+</section>
+
+<section id="github">
+<h2>Configuración única de GitHub</h2>
+<table>
+<tr><th>Dónde</th><th>Qué</th></tr>
+<tr><td>Settings → Secrets → Actions (repositorio)</td><td>Los de siempre de PeachGlow: <code>FIREBASE_SERVICE_ACCOUNT</code>, <code>FUNCTIONS_ENV</code>, <code>APP_ENV</code>, y <code>EXPO_TOKEN</code> (sirve para todos). <code>EXPO_TOKEN</code> se crea en <a href="https://expo.dev/settings/access-tokens" target="_blank" rel="noopener">expo.dev → Access tokens</a>; todos los proyectos de EAS de los negocios quedan en esa misma cuenta de Expo.</td></tr>
+<tr><td>Settings → Environments → <code>&lt;id&gt;</code></td><td>Los de cada negocio. La consola los crea y llena desde Secretos</td></tr>
+<tr><td>Consola en GitHub Pages</td><td>
+  <ol>
+    <li>Crea el repo <b>público</b> <code>peachglow-consola</code>, vacío.</li>
+    <li>Crea una <b>llave de despliegue</b> (deploy key) con escritura solo en ese repo y guarda la parte privada en <b>este</b> repo como secreto <code>CONSOLE_DEPLOY_KEY</code>:<br><code>ssh-keygen -t ed25519 -N "" -f consola_key</code> → <code>gh repo deploy-key add consola_key.pub --repo tu-usuario/peachglow-consola --allow-write</code> → <code>gh secret set CONSOLE_DEPLOY_KEY &lt; consola_key</code> → borra los dos archivos. (Ya está hecho para PeachGlow.)</li>
+    <li>En este repo, ve a Settings → Secrets and variables → Actions → pestaña <b>Variables</b> y crea <code>CONSOLE_REPO</code> = <code>tu-usuario/peachglow-consola</code>.</li>
+    <li>Corre el workflow <b>Console</b> (Actions → Console → Run workflow). Crea la rama <code>gh-pages</code> en el repo de la consola.</li>
+    <li>En el repo de la consola, entra a Settings → Pages → Source: <b>Deploy from a branch</b> → <code>gh-pages</code> / root → Save. En un par de minutos queda en <code>https://tu-usuario.github.io/peachglow-consola/</code>.</li>
+    <li>Después se vuelve a publicar sola cada vez que cambie <code>console/</code> o la guía.</li>
+  </ol>
+</td></tr>
+</table>
+<div class="box">El repo de la consola es público pero no contiene datos ni secretos: sin un token válido no muestra nada.</div>
+</section>
+
+<!-- ===================== REFERENCIA ===================== -->
+
+<section id="secretos">
+<h2>Secretos de cada negocio</h2>
+<p>Los secretos son contraseñas y llaves. <b>Nunca</b> van en <code>tenant.json</code> ni en el repo, y nadie los puede volver a ver una vez guardados: ni tú, ni GitHub, ni la consola. Para cambiar uno, se vuelve a guardar.</p>
+<div class="both"><div><h4>Consola</h4>El negocio → <b>Secretos</b> → pega el valor o elige el archivo → <b>Guardar</b>. Se cifra en tu navegador antes de enviarse.</div><div><h4>Comando</h4><code>npm run tenant -- secrets set &lt;id&gt; NOMBRE</code> (te lo pide sin mostrarlo)<br><code>npm run tenant -- secrets list &lt;id&gt;</code> (cuáles existen)</div></div>
+
+<h3>Cuáles son y de dónde se sacan</h3>
+<table>
+<tr><th>Secreto</th><th>Qué es / de dónde sale</th><th>¿Obligatorio?</th><th>Dónde queda</th></tr>
+<tr><td><code>FIREBASE_SERVICE_ACCOUNT</code></td><td>La llave JSON de la cuenta de servicio <code>github-deploy</code> de <b>su</b> proyecto de Google Cloud (<a href="#ejemplo">ejemplo, paso 4</a>). Con ella GitHub despliega en su Firebase.</td><td><b>Sí</b>, antes de "Preparar proyecto en la nube"</td><td>GitHub (su Environment)</td></tr>
+<tr><td><code>MP_ACCESS_TOKEN</code></td><td>Access token de producción (<code>APP_USR-…</code>) de <b>su</b> app de Mercado Pago (<a href="#mp">Mercado Pago</a>).</td><td>Solo si cobra en línea (módulo Pagos)</td><td>Firebase (Secret Manager) y GitHub</td></tr>
+<tr><td><code>MP_WEBHOOK_SECRET</code></td><td>La "clave secreta" que muestra Mercado Pago al registrar el webhook.</td><td>Solo si cobra en línea. Sin ella, los pagos no se registran</td><td>Firebase y GitHub</td></tr>
+<tr><td><code>GOOGLE_MAPS_API_KEY</code></td><td>API key con "Routes API" de Google Cloud, para cobrar el traslado por distancia real. Con <code>-</code> se usa la distancia en línea recta.</td><td>No (módulo Domicilio)</td><td>Firebase y GitHub</td></tr>
+<tr><td><code>GOOGLE_WALLET_CREDENTIALS</code></td><td>JSON de la cuenta de servicio autorizada en Google Pay &amp; Wallet Console.</td><td>No (módulo Wallet)</td><td>Firebase y GitHub</td></tr>
+<tr><td><code>APPLE_PASS_CREDENTIALS</code></td><td>Certificados de Apple Wallet. Solo cuando haya cuenta de Apple.</td><td>No</td><td>Firebase y GitHub</td></tr>
+<tr><td><code>ANDROID_KEYSTORE_BASE64</code></td><td>El archivo <code>.jks</code> de su llave de subida (<a href="#ejemplo">ejemplo, paso 10</a>). En la consola eliges el archivo y lo convierte sola.</td><td>Para compilar el .aab desde la consola</td><td>GitHub</td></tr>
+<tr><td><code>ANDROID_KEYSTORE_PASSWORD</code>, <code>ANDROID_KEY_ALIAS</code>, <code>ANDROID_KEY_PASSWORD</code></td><td>Las contraseñas y el alias (<code>upload</code>) que pusiste al crear el <code>.jks</code>.</td><td>Para compilar el .aab desde la consola</td><td>GitHub</td></tr>
+</table>
+<div class="box">Las functions necesitan que existan los 5 secretos de Firebase (los de Mercado Pago, Maps, Google Wallet y Apple Wallet). "Preparar proyecto en la nube" crea con <code>-</code> los que falten, para que se pueda desplegar. Después pones los reales cuando el negocio los tenga.</div>
+
+<h3>Qué se configura solo en GitHub y qué no</h3>
+<table>
+<tr><th>Qué</th><th>¿Automático?</th></tr>
+<tr><td>Los workflows (despliegue, compilar, secretos, alta)</td><td>✅ Son los mismos para todos los negocios. Uno nuevo <b>no</b> necesita su propio <code>.yml</code></td></tr>
+<tr><td>Su Environment en GitHub (su "cajón de secretos")</td><td>✅ La consola lo crea al dar <b>Crear negocio</b>. La CLI, al guardar el primer secreto</td></tr>
+<tr><td>Entrar al despliegue automático de cada push</td><td>✅ Después de "Preparar proyecto en la nube". Antes, el despliegue lo salta con un aviso, sin fallar</td></tr>
+<tr><td><code>EXPO_TOKEN</code> (actualizaciones por aire)</td><td>✅ Se usa el del repositorio para todos los negocios</td></tr>
+<tr><td>Su proyecto de Firebase con plan Blaze</td><td>❌ A mano (<a href="#ejemplo">paso 1</a>), por la facturación</td></tr>
+<tr><td>Su cuenta de servicio, Mercado Pago, keystore y Wallet</td><td>❌ Los guardas tú en <b>Secretos</b>. Son del negocio y nadie más los puede generar</td></tr>
+</table>
+
+<h3>PeachGlow</h3>
+<p>PeachGlow sigue usando los secretos <b>del repositorio</b> de siempre (Settings → Secrets → Actions): <code>FIREBASE_SERVICE_ACCOUNT</code>, <code>FUNCTIONS_ENV</code> (contenido de <code>functions/.env</code>), <code>APP_ENV</code> (contenido de <code>.env</code>) y <code>EXPO_TOKEN</code>. Sus secretos de Mercado Pago ya están en su Firebase. No hay que mover nada. Lo que guardes en su Environment desde la consola tiene prioridad sobre los del repositorio.</p>
+<div class="box warn">Si cambias <code>functions/.env</code> o <code>.env</code> de PeachGlow en tu PC (por ejemplo <code>ADMIN_EMAILS</code>), actualiza también <code>FUNCTIONS_ENV</code> o <code>APP_ENV</code> en GitHub: el despliegue automático usa los del secreto.</div>
+</section>
+
+<section id="referencia">
+<h2>Claves de tenant.json</h2>
+<p>Esta tabla se arma desde <code>scripts/tenant/schema.js</code>, así que siempre está al día. <span class="tag native">🔶 .aab</span> exige compilar; <span class="tag lock">🔒</span> está bloqueado en negocios publicados.</p>
+<div id="ref"><p class="box warn">No se pudo cargar el esquema. Ábrela desde la consola (<code>/guia</code>) o con <code>npm run console</code>.</p></div>
+</section>
+
+<section id="nativo">
+<h2>¿Necesito un .aab nuevo?</h2>
+<table>
+<tr><th>Cambio</th><th>¿.aab?</th></tr>
+<tr><td>Pantallas, textos, colores de la app, lógica (<code>src/</code>)</td><td>No: llega por actualización por aire</td></tr>
+<tr><td>Cloud Functions, reglas, web</td><td>No</td></tr>
+<tr><td>Color, logo o textos desde la app del negocio</td><td>No</td></tr>
+<tr><td>Nombre de la app, ícono, splash, paquete, permisos, AdMob App ID</td><td><b>Sí</b> 🔶</td></tr>
+<tr><td>Agregar o actualizar una librería con código nativo (<code>npx expo install …</code>)</td><td><b>Sí</b>, y sube el runtimeVersion (<code>bump --native</code>)</td></tr>
+<tr><td><code>google-services.json</code>, plugins, versión de Expo</td><td><b>Sí</b></td></tr>
+</table>
+<div class="box danger"><b>Un cambio nativo en el código compartido</b> (agregar una librería nativa, actualizar Expo, cambiar un plugin) afecta a <b>todos</b> los negocios. Cada uno necesita <code>bump &lt;id&gt; --native</code>, su .aab nuevo y subirlo a su ficha de Play. Hasta que cada negocio publique su .aab, sus apps instaladas no reciben actualizaciones de ese código, para no romperse. Agrúpalos para hacerlo pocas veces.</div>
+<div class="box warn">Si cambias algo nativo sin subir el runtimeVersion, Deploy <b>no</b> publica la actualización por aire, para no romper la app instalada, y te deja un aviso.</div>
+</section>
+
+<section id="errores">
+<h2>Errores comunes</h2>
+<details><summary>"La cuenta de servicio de X es del proyecto Y"</summary><p>Guardaste en el Environment del negocio la cuenta de otro proyecto. Vuelve a guardar en Secretos el .json correcto. Esta revisión evita desplegar un negocio en el Firebase de otro.</p></details>
+<details><summary>"La app de X usa el proyecto P, pero el .env es de Q"</summary><p>Falta la configuración web de Firebase en su tenant.json. Corre "Preparar proyecto en la nube" o copia los valores de Firebase → Configuración → Tus apps → Web con <code>set &lt;id&gt; firebase.apiKey …</code>. En la PC usa <code>EXPO_NO_DOTENV=1</code>.</p></details>
+<details><summary>Deploy falla con 403 / Permission denied</summary><p>A la cuenta de servicio le falta un rol. Revisa en IAM los roles de la sección <a href="#alta">Alta</a> y vuelve a correr el despliegue.</p></details>
+<details><summary>"Accessing secret failed … Permission denied on secret"</summary><p>Una función usa un secreto que no existe o se borró. Créalo de nuevo (con "-" si no se usa), o borra la función y vuelve a desplegar. Las functions declaran todos sus secretos, así que todos deben existir.</p></details>
+<details><summary>google-services.json "de relleno" o con otro paquete</summary><p>Descarga el real: Firebase → Configuración del proyecto → Tus apps → Android (el paquete del negocio) → <code>google-services.json</code>, y súbelo a <code>tenants/&lt;id&gt;/</code>. "Preparar proyecto en la nube" lo hace solo.</p></details>
+<details><summary>El .aab sale firmado con la llave de prueba / Play lo rechaza</summary><p>Faltan las propiedades <code>&lt;PREFIJO&gt;_UPLOAD_*</code> (PC) o los secretos <code>ANDROID_KEYSTORE_*</code> (consola). El comando <code>build</code> se detiene antes de compilar si faltan.</p></details>
+<details><summary>En Windows: "ninja: error: mkdir" al compilar</summary><p>Son las rutas largas. <code>build</code> pone <code>cmake.dir</code> (CMake 3.31.6) en <code>android/local.properties</code>. Si sigue fallando, borra las carpetas <code>.cxx</code> y vuelve a compilar.</p></details>
+<details><summary>"dist/ es la web de X, no de Y" al hacer firebase deploy</summary><p>Es un candado: en <code>dist/</code> quedó la web de otro negocio (la última que se exportó). Vuelve a exportar la correcta con <code>npm run tenant -- build-web &lt;id&gt;</code>, o usa <code>npm run tenant -- deploy &lt;id&gt; web</code>, que hace las dos cosas.</p></details>
+<details><summary>"android/ es de X, no de Y" con npm run build:android</summary><p>Es otro candado: la carpeta <code>android/</code> se generó para otro negocio. Usa <code>npm run tenant -- build &lt;id&gt; android</code>, que la regenera para el negocio correcto antes de compilar.</p></details>
+<details><summary>Guardé en la consola y dice "Alguien más cambió este negocio"</summary><p>Mientras editabas, otra persona o un workflow (por ejemplo "Preparar proyecto en la nube") guardó cambios en ese negocio. Recarga la página y vuelve a hacer tu cambio. Así no se borra lo que guardó el otro.</p></details>
+<details><summary>Un negocio nuevo no aparece en los despliegues</summary><p>Hasta que no se corre "Preparar proyecto en la nube" (que llena su <code>firebase.apiKey</code>), el despliegue automático lo salta. Si su cuenta de servicio no es de su proyecto, se salta con un aviso, sin fallar.</p></details>
+<details><summary>Cambié de negocio y la app sigue mostrando el anterior</summary><p>Es la caché de Metro. Arranca con <code>--clear</code>.</p></details>
+<details><summary>La actualización no le llega a la app instalada</summary><p>El runtimeVersion de <code>tenant.json</code> debe ser el mismo con el que se compiló el .aab de la tienda. Revisa la pestaña Compilar y el aviso del último Deploy.</p></details>
+</section>
+
+<section id="checklist">
+<h2>Checklist de alta</h2>
+<p class="muted">Se guarda en este navegador para que marques tu avance.</p>
+<ul class="check" id="check">
+<li><label><input type="checkbox">Proyecto de Firebase creado, con plan Blaze y alerta de presupuesto</label></li>
+<li><label><input type="checkbox">Negocio creado en la consola (o con <code>tenant new</code>)</label></li>
+<li><label><input type="checkbox">Cuenta de servicio guardada en Secretos</label></li>
+<li><label><input type="checkbox">"Preparar proyecto en la nube" terminó bien</label></li>
+<li><label><input type="checkbox">Extensión Trigger Email instalada (correos)</label></li>
+<li><label><input type="checkbox">Aviso de privacidad publicado y su URL en Legal</label></li>
+<li><label><input type="checkbox">Ícono, logo y gráfico de Play subidos</label></li>
+<li><label><input type="checkbox">Mercado Pago: token y clave del webhook guardados; pago de prueba hecho</label></li>
+<li><label><input type="checkbox">AdMob: App ID y bloque de anuncios (si incluye anuncios)</label></li>
+<li><label><input type="checkbox">Keystore creado, respaldado y guardado en Secretos</label></li>
+<li><label><input type="checkbox">Primer .aab compilado y ficha de Play creada</label></li>
+<li><label><input type="checkbox">La primera admin entró y quedó como admin</label></li>
+<li><label><input type="checkbox">Login con Google: Client ID web y huellas SHA-1 (si lo usará)</label></li>
+<li><label><input type="checkbox">Contrato con el negocio y quién paga Firebase</label></li>
+<li><label><input type="checkbox">Alertas de errores creadas y el correo de confirmación de Google aceptado</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+<script src="../schema.js" onerror="var s=document.createElement('script');s.src='../../scripts/tenant/schema.js';s.onload=window.renderRef;document.head.appendChild(s)" onload="window.renderRef&&window.renderRef()"></script>
+<script>
+window.renderRef = function () {
+  var S = window.TenantSchema, box = document.getElementById('ref');
+  if (!S || !box) return;
+  box.textContent = '';
+  S.SECTIONS.forEach(function (sec) {
+    var h = document.createElement('h3'); h.textContent = sec.label + ' (' + sec.key + ')'; box.appendChild(h);
+    if (sec.help) { var p = document.createElement('p'); p.className = 'muted'; p.textContent = sec.help; box.appendChild(p); }
+    var t = document.createElement('table'); var head = t.insertRow();
+    ['Clave', 'Qué es', 'Tipo', ''].forEach(function (x) { var th = document.createElement('th'); th.textContent = x; head.appendChild(th); });
+    sec.fields.forEach(function (f) {
+      var r = t.insertRow();
+      var c1 = r.insertCell(); var code = document.createElement('code'); code.textContent = sec.key + '.' + f.key; c1.appendChild(code);
+      var c2 = r.insertCell(); c2.textContent = f.label + (f.help ? ' — ' + f.help : '') + (f.example !== undefined ? ' (ej. ' + (Array.isArray(f.example) ? f.example.join(', ') : f.example) + ')' : '');
+      r.insertCell().textContent = f.type + (f.required ? ', obligatorio' : '');
+      var c4 = r.insertCell();
+      if (f.native) { var a = document.createElement('span'); a.className = 'tag native'; a.textContent = '🔶 .aab'; c4.appendChild(a); }
+      if (f.locked) { var b = document.createElement('span'); b.className = 'tag lock'; b.textContent = '🔒'; c4.appendChild(b); }
+    });
+    box.appendChild(t);
+  });
+  var h = document.createElement('h3'); h.textContent = 'Secretos (nunca en tenant.json)'; box.appendChild(h);
+  var t = document.createElement('table');
+  S.SECRETS.forEach(function (s) { var r = t.insertRow(); var c = r.insertCell(); var code = document.createElement('code'); code.textContent = s.name; c.appendChild(code); r.insertCell().textContent = s.label; r.insertCell().textContent = s.target === 'firebase' ? 'Secret Manager (Firebase)' : 'GitHub (Environment)'; });
+  box.appendChild(t);
+};
+if (window.TenantSchema) window.renderRef();
+(function () {
+  var KEY = 'guia.checklist';
+  var boxes = document.querySelectorAll('#check input');
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+  boxes.forEach(function (b, i) {
+    b.checked = !!saved[i];
+    b.addEventListener('change', function () {
+      try { localStorage.setItem(KEY, JSON.stringify(Array.prototype.map.call(boxes, function (x) { return x.checked; }))); } catch (e) {}
+    });
+  });
+})();
+</script>
+</body>
+</html>
